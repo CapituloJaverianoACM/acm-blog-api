@@ -1,6 +1,6 @@
 import {Comment, CreateCommentRequest, UpdateCommentRequest } from '../types/comment';
 
-// In-memory storage, while we setup databse with Supabase, PostgreSQL or ...
+// In-memory storage, while we setup database with Supabase, PostgreSQL or ...
 let comments: Comment[] = [];
 let nextId = 1;
 
@@ -14,7 +14,7 @@ export class CommentService{
         return comments;
     }
 
-    //Get a single coment by ID
+    //Get a single comment by ID
     static getCommentById(id: number): Comment | null {
         return comments.find(comment => comment.id === id) || null;
     }
@@ -30,7 +30,7 @@ export class CommentService{
         return comments.filter(comment => comment.parent_id === commentId);
     }
 
-    // Constructor - Create a new comment
+    // Create a new comment
     static createComment(data: CreateCommentRequest): Comment {
         const now = new Date();
         const newComment: Comment = {
@@ -52,6 +52,10 @@ export class CommentService{
         const commentIndex = comments.findIndex(comment => comment.id === id);
         const updateTime = new Date();
 
+        if (commentIndex === -1) {
+            return null;
+        }
+
         if(data.content !== undefined){
             comments[commentIndex].content = data.content;
             comments[commentIndex].last_update = updateTime;
@@ -65,6 +69,10 @@ export class CommentService{
     static deleteComment(id: number): Comment | null {
         const commentIndex = comments.findIndex(comment => comment.id === id);
         
+        if (commentIndex === -1) {
+            return null;
+        }
+
         const deletedComment = comments.splice(commentIndex, 1)[0];
         return deletedComment;
     }

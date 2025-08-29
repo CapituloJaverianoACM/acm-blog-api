@@ -21,7 +21,7 @@ export const UpdateCommentSchema = t.Object({
     }))
 });
 
-// Schema for deleting and retreiving a comment (GET, DELETE http methods)
+// Schema for deleting and retrieving a comment (GET, DELETE http methods)
 export const CommentParamsSchema = t.Object({
     id: t.String({
         //Regular expression for validating only numeric types
