@@ -1,137 +1,94 @@
 import { Elysia } from 'elysia';
 import { CommentService } from '../services/comment.services';
 import { CreateCommentSchema, UpdateCommentSchema, CommentParamsSchema } from '../schemas/comment.schemas';
-import type { ApiResponse } from '../types/api';
-import type { Comment } from '../types/comment';
+import { ResponseHelpers } from '../utils/response.helpers';
 
-export const commentRoutes = new Elysia({prefix: '/comments'})
-// HTTP method: GET - /comments - Get all comments
-.get('/', () => {
+
+export const commentRoutes = new Elysia({ prefix: '/comments' })
+
+  // GET /comments - Get all comments
+  .get('/', () => {
     const comments = CommentService.getAllComments();
+    return ResponseHelpers.ok(
+      comments, 
+      "Comments retrieved successfully", 
+      comments.length
+    );
+  })
 
-    const response: ApiResponse<Comment[]> = {
-        success: true,
-        data: comments,
-        count: comments.length
-    };
-
-    return response;
-})
-
-// HTTP method: GET - /comments/:id - Get a specific comment
-.get('/:id', ({params: {id}}) => {
+  // GET /comments/:id - Get a specific comment
+  .get('/:id', ({ params: { id } }) => {
     const commentId = parseInt(id);
     const comment = CommentService.getCommentById(commentId);
 
-    // If there is no comment given that ID
-    if(!comment){
-        const response: ApiResponse<null> = {
-            success: false,
-            error: "Comment not found"
-        };
-        return response;
+    if (!comment) {
+      return ResponseHelpers.notFound('Comment not found');
     }
 
-    //If theres a comment given that ID
-    const response: ApiResponse<Comment> ={
-        success: true,
-        data: comment
-    };
-
-    return response;
-}, {
+    return ResponseHelpers.ok(comment, "Comment retrieved successfully");
+  }, {
     params: CommentParamsSchema
-})
+  })
 
-// HTTP Method: GET - /comments/blog/:blog_id - Get all comments for a specific blog
-.get('/blog/:blog_id', ({params: {blog_id}}) => {
+  // GET /comments/blog/:blog_id - Get comments for a specific blog
+  .get('/blog/:blog_id', ({ params: { blog_id } }) => {
     const blogId = parseInt(blog_id);
     const comments = CommentService.getCommentsByBlogId(blogId);
 
-    const response: ApiResponse<Comment[]> = {
-        success: true,
-        data: comments,
-        count: comments.length
-    }
+    return ResponseHelpers.ok(
+      comments, 
+      `Comments for blog ${blogId} retrieved successfully`, 
+      comments.length
+    );
+  })
 
-    return response;
-})
-
-// HTTP Method: GET - /comments/:id/replies - Get replies to a specific comment
-.get('/:id/replies', ({params: {id}}) =>{
+  // GET /comments/:id/replies - Get replies to a specific comment
+  .get('/:id/replies', ({ params: { id } }) => {
     const commentId = parseInt(id);
     const replies = CommentService.getRepliesByCommentId(commentId);
 
-    const response: ApiResponse<Comment[]> = {
-        success: true,
-        data: replies,
-        count: replies.length
-    };
-
-    return response;
-},{
+    return ResponseHelpers.ok(
+      replies, 
+      `Replies to comment ${commentId} retrieved successfully`, 
+      replies.length
+    );
+  }, {
     params: CommentParamsSchema
-})
+  })
 
-// HTTP Method: POST - /comments - Create a new comment
-.post('/', ({body}) =>{
+  // POST /comments - Create a new comment
+  .post('/', ({ body }) => {
     const newComment = CommentService.createComment(body);
+    return ResponseHelpers.created(newComment, "Comment created successfully");
+  }, {
+    body: CreateCommentSchema
+  })
 
-    const response: ApiResponse<Comment> = {
-        success: true,
-        data:newComment,
-        message: 'Comment created successfully'
-    };
-    return response;
-},{
-    body : CreateCommentSchema
-})
-
-// HTTP Method: PUT - /comments/:id - Update an existing comment
-.put('/:id', ({ params: { id }, body }) => {
+  // PUT /comments/:id - Update a comment
+  .put('/:id', ({ params: { id }, body }) => {
     const commentId = parseInt(id);
     const updatedComment = CommentService.updateComment(commentId, body);
-    
+
     if (!updatedComment) {
-      const response: ApiResponse<null> = {
-        success: false,
-        error: 'Comment not found'
-      };
-      return response;
+      return ResponseHelpers.notFound('Comment not found');
     }
-    
-    const response: ApiResponse<Comment> = {
-      success: true,
-      data: updatedComment,
-      message: 'Comment updated successfully'
-    };
-    
-    return response;
+
+    return ResponseHelpers.ok(updatedComment, "Comment updated successfully");
   }, {
     params: CommentParamsSchema,
     body: UpdateCommentSchema
-})
+  })
 
-// HTTP Method: DELETE - /comments/:id - Delete a specific comment
-.delete('/:id', ({params: {id}}) =>{
+  // DELETE /comments/:id - Delete a comment
+  .delete('/:id', ({ params: { id } }) => {
     const commentId = parseInt(id);
     const deletedComment = CommentService.deleteComment(commentId);
 
-    if (!deletedComment){
-        const response: ApiResponse<null> = {
-            success: false,
-            error: 'Comment not found'
-        };
-        return response;
+    if (!deletedComment) {
+      return ResponseHelpers.notFound('Comment not found');
     }
 
-    const response: ApiResponse<Comment> = {
-        success: true,
-        data: deletedComment,
-        message: 'Comment deleted successfully'
-    };
-
-    return response;
-},{
+    return ResponseHelpers.ok(deletedComment, "Comment deleted successfully");
+  }, {
     params: CommentParamsSchema
-});
+  });
