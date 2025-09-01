@@ -1,15 +1,45 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Comment {
+  id          Int   @id
+  blog_id     Int
+  parent_id   Int?  // Optional - null for top-level comments
+  content     String? @db.Text
+  owner_id    Int
+  created_at  DateTime? @db.Date
+  last_update DateTime? @db.Date
+
+  // Relations based on Galindo's DDL
+  blog        Blog     @relation(fields: [blog_id], references: [id])
+  parent      Comment? @relation("CommentReplies", fields: [parent_id], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+
+  @@map("comment")
+}
+
+// Add other models from your DDL
+model Blog {
+  id         Int       @id
+  title      String?   @db.Text
+  content    String?   @db.Text
+  created_at DateTime? @db.Date
+  last_update DateTime? @db.Date
+  latitude   Float?
+  longitude  Float?
+  published  Boolean?
+
+  comments   Comment[]
+  
+  @@map("blog")
 }
