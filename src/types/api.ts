@@ -8,5 +8,7 @@ export interface ApiResponse<T> {
     data?: T;
     error?: string;
     message?: string;
-    count?: number;
+    total?: number; // total number of items in the response
+    timestamp: string; // when the response was generated
+    status: number; // HTTP status code
   }
