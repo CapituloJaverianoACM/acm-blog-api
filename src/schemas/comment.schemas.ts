@@ -3,7 +3,7 @@ import { t } from "elysia";
 // Schema for creating a new comment
 export const CreateCommentSchema = t.Object({
     blog_id: t.Number({minimum: 1 }),
-    parent_id: t.Optional(t.Union([t.Number({minimum: 1}), t.Null()])),
+    parent_id: t.Optional(t.Number({minimum: 1})), 
     content: t.String({
         minLength: 1,
         maxLength: 1000,
