@@ -20,7 +20,7 @@ export interface CreateCommentRequest{
 }
 
 export interface UpdateCommentRequest{
-    content?: string;
+    content: string;
 }
 
 /*

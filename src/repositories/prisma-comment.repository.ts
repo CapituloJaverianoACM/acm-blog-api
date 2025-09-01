@@ -65,7 +65,7 @@ export class PrismaCommentRepository implements ICommentRepository {
       const updatedComment = await this.prisma.comment.update({
         where: { id },
         data: {
-          ...(data.content !== undefined && { content: data.content }),
+          content: data.content, 
           last_update: new Date()
         }
       });

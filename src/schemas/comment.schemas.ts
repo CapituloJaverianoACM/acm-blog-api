@@ -14,11 +14,11 @@ export const CreateCommentSchema = t.Object({
 
 // Schema for updating a new comment
 export const UpdateCommentSchema = t.Object({
-    content: t.Optional(t.String({
+    content: t.String({
         minLength: 1,
         maxLength: 1000,
         description: "Updated comment content must be between 1-1000 characters long"
-    }))
+    })
 });
 
 // Schema for deleting and retrieving a comment (GET, DELETE http methods)
