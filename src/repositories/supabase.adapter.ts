@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { Idatabase } from "../utils/database.interface";
+import { IDatabase } from "./database.interface";
 
-export class SupabaseAdaapter implements Idatabase {
+export class SupabaseAdaapter implements IDatabase {
     private static instance: SupabaseAdaapter | null = null;
     private client: SupabaseClient;
     
@@ -48,15 +48,15 @@ export class SupabaseAdaapter implements Idatabase {
         return this.assembleResponse(error, data);
     }
     async update<T>(table: string, query: Partial<T>, data: T): Promise<{ error: string | null; data: any; }> {
-        const { error, data: result } = await this.client.from(table).update(data).match(query);
+        const { error, data: result } = await this.client.from(table).update(data).match(query).select();
         return this.assembleResponse(error, result);
     }
     async updateBy<T,DTO>(table: string, query: Partial<T>, data: DTO): Promise<{ error: string | null; data: any; }> {
-        const { error, data: result } = await this.client.from(table).update(data).match(query);
+        const { error, data: result } = await this.client.from(table).update(data).match(query).select();
         return this.assembleResponse(error, result);
     }
     async delete<T>(table: string, query: Partial<T>): Promise<{ error: string | null; data: any; }> {
-        const { error, data: result } = await this.client.from(table).delete().match(query);
+        const { error, data: result } = await this.client.from(table).delete().match(query).select();
         return this.assembleResponse(error, result);
     }
 

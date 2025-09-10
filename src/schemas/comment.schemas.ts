@@ -9,7 +9,9 @@ export const CreateCommentSchema = t.Object({
         maxLength: 1000,
         description: "Comment content must be between 1-1000 characters long"
     }),
-    owner_id: t.Number({minimum: 1})
+    owner_id: t.Number({minimum: 1}),
+    created_at: t.Optional(t.String()),
+    last_update: t.Optional(t.String()),
 });
 
 // Schema for updating a new comment

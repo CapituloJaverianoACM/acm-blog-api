@@ -2,9 +2,10 @@ import { Elysia } from 'elysia';
 import { CreateCommentSchema, UpdateCommentSchema, CommentParamsSchema } from '../schemas/comment.schemas';
 import { ResponseHelpers } from '../utils/response.helpers';
 import { SupabaseAdaapter } from '../repositories/supabase.adapter';
+import { IDatabase } from '../repositories/database.interface';
 
 const TABLE = 'comment';
-const db: SupabaseAdaapter = SupabaseAdaapter.getInstance();
+const db: IDatabase = SupabaseAdaapter.getInstance();
 
 export const commentRoutes = new Elysia({ prefix: '/comments' })
 
@@ -34,13 +35,13 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
       if (response.error) {
         return ResponseHelpers.serverError(response.error);
       }
-      const comment = response.data?.[0] || null;
+      const comments = response.data?.[0] || null;
 
-      if (!comment) {
+      if (!comments) {
         return ResponseHelpers.notFound('Comment not found');
       }
 
-      return ResponseHelpers.ok(comment, "Comment retrieved successfully");
+      return ResponseHelpers.ok(comments, "Comment retrieved successfully");
     } catch (error) {
       return ResponseHelpers.serverError("Failed to retrieve comment");
     }
@@ -56,7 +57,9 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
       if (response.error) {
         return ResponseHelpers.serverError(response.error);
       }
-      const comments = response.data;
+      const comments = response.data?.[0] || null;
+
+      console.log(comments);
 
       if (!comments) {
         return ResponseHelpers.notFound('Comments not found');
@@ -80,7 +83,7 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
       if (response.error) {
         return ResponseHelpers.serverError(response.error);
       }
-      const replies = response.data;
+      const replies = response.data?.[0] || null;
 
       if (!replies) {
         return ResponseHelpers.notFound('Replies not found');
@@ -122,7 +125,9 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
       if (response.error) {
         return ResponseHelpers.serverError(response.error);
       }
-      const updatedComment = response.data;
+
+      //In this moment we are not taking the date of last update
+      const updatedComment = response.data?.[0] || null;;
 
       if (!updatedComment) {
         return ResponseHelpers.notFound('Comment not found');
@@ -145,7 +150,7 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
       if (response.error) {
         return ResponseHelpers.serverError(response.error);
       }
-      const deletedComment = response.data;
+      const deletedComment = response.data?.[0] || null;
 
       if (!deletedComment) {
         return ResponseHelpers.notFound('Comment not found');

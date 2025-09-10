@@ -1,4 +1,4 @@
-export interface Idatabase {
+export interface IDatabase {
     
     insert<T>(
     table: string,
