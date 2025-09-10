@@ -1,14 +1,21 @@
 import { Elysia } from 'elysia';
-import { CommentService } from '../services/comment.services';
 import { CreateCommentSchema, UpdateCommentSchema, CommentParamsSchema } from '../schemas/comment.schemas';
 import { ResponseHelpers } from '../utils/response.helpers';
+import { SupabaseAdaapter } from '../repositories/supabase.adapter';
+
+const TABLE = 'comment';
+const db: SupabaseAdaapter = SupabaseAdaapter.getInstance();
 
 export const commentRoutes = new Elysia({ prefix: '/comments' })
 
   // GET /comments - Get all comments
   .get('/', async () => {
     try {
-      const comments = await CommentService.getAllComments();
+      const response = await db.getAll(TABLE, { column: 'id', asc: true });
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const comments = response.data;
       return ResponseHelpers.ok(
         comments, 
         "Comments retrieved successfully", 
@@ -23,7 +30,11 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   .get('/:id', async ({ params: { id } }) => {
     try {
       const commentId = parseInt(id);
-      const comment = await CommentService.getCommentById(commentId);
+      const response = await db.getBy(TABLE, { id: commentId });
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const comment = response.data?.[0] || null;
 
       if (!comment) {
         return ResponseHelpers.notFound('Comment not found');
@@ -41,7 +52,15 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   .get('/blog/:blog_id', async ({ params: { blog_id } }) => {
     try {
       const blogId = parseInt(blog_id);
-      const comments = await CommentService.getCommentsByBlogId(blogId);
+      const response = await db.getBy(TABLE, { blog_id: blogId }, { column: 'id', asc: true });
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const comments = response.data;
+
+      if (!comments) {
+        return ResponseHelpers.notFound('Comments not found');
+      } 
 
       return ResponseHelpers.ok(
         comments, 
@@ -57,7 +76,15 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   .get('/:id/replies', async ({ params: { id } }) => {
     try {
       const commentId = parseInt(id);
-      const replies = await CommentService.getRepliesByCommentId(commentId);
+      const response = await db.getBy(TABLE, { parent_id: commentId }, { column: 'id', asc: true });
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const replies = response.data;
+
+      if (!replies) {
+        return ResponseHelpers.notFound('Replies not found');
+      }
 
       return ResponseHelpers.ok(
         replies, 
@@ -74,7 +101,11 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   // POST /comments - Create a new comment
   .post('/', async ({ body }) => {
     try {
-      const newComment = await CommentService.createComment(body);
+      const response = await db.insert(TABLE, body);
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const newComment = response.data;
       return ResponseHelpers.created(newComment, "Comment created successfully");
     } catch (error) {
       return ResponseHelpers.serverError("Failed to create comment");
@@ -87,7 +118,11 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   .put('/:id', async ({ params: { id }, body }) => {
     try {
       const commentId = parseInt(id);
-      const updatedComment = await CommentService.updateComment(commentId, body);
+      const response = await db.updateBy(TABLE, { id: commentId }, body);
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const updatedComment = response.data;
 
       if (!updatedComment) {
         return ResponseHelpers.notFound('Comment not found');
@@ -106,7 +141,11 @@ export const commentRoutes = new Elysia({ prefix: '/comments' })
   .delete('/:id', async ({ params: { id } }) => {
     try {
       const commentId = parseInt(id);
-      const deletedComment = await CommentService.deleteComment(commentId);
+      const response = await db.delete(TABLE, { id: commentId });
+      if (response.error) {
+        return ResponseHelpers.serverError(response.error);
+      }
+      const deletedComment = response.data;
 
       if (!deletedComment) {
         return ResponseHelpers.notFound('Comment not found');

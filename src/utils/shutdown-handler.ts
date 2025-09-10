@@ -1,4 +1,3 @@
-import { CommentService } from '../services/comment.services';
 
 export class ShutdownHandler {
   private static isShuttingDown = false;
@@ -13,9 +12,9 @@ export class ShutdownHandler {
     console.log(`\nReceived ${signal}. Starting graceful shutdown...`);
     
     try {
-      // Close database connections
+      /*/ Close database connections Disabled for now because there is no persistent connection in Supabase they use HTTP requests or websockets
       await CommentService.disconnect();
-      console.log("✅ Database connections closed");
+      console.log("✅ Database connections closed");*/ 
       
       // Stop the server if provided
       if (app && typeof app.stop === 'function') {
