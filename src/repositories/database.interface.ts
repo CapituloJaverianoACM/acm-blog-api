@@ -1,9 +1,11 @@
+import { DBResponse } from "../types/database";
+
 export interface IDatabase {
     
     insert<T>(
     table: string,
     data: T,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
     getAll(
         table: string,
         order?: {
@@ -11,7 +13,7 @@ export interface IDatabase {
         asc?: boolean;
         },
         limit?: number,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
     getBy<T>(
         table: string,
         query: Partial<T>,
@@ -20,19 +22,19 @@ export interface IDatabase {
         asc?: boolean;
         },
         limit?: number,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
     update<T>(
         table: string,
         query: Partial<T>,
         data: T,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
     updateBy<T, DTO>(
         table: string,
         query: Partial<T>,
         data: DTO,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
     delete<T>(
         table: string,
         query: Partial<T>,
-    ): Promise<{ error: string | null; data: any }>;
+    ): Promise<DBResponse>;
 }

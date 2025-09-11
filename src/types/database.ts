@@ -1,4 +1,4 @@
-export type DBResponse<T> = {
+export type DBResponse = {
   error: string | null;
-  data: T | null;
+  data: any | null;
 };
