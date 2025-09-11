@@ -48,10 +48,6 @@ export class SupabaseAdaapter implements IDatabase {
         const { error, data } = await req;
         return this.assembleResponse(error, data);
     }
-    async update<T>(table: string, query: Partial<T>, data: T): Promise<DBResponse> {
-        const { error, data: result } = await this.client.from(table).update(data).match(query).select();
-        return this.assembleResponse(error, result);
-    }
     async updateBy<T,DTO>(table: string, query: Partial<T>, data: DTO): Promise<DBResponse> {
         const { error, data: result } = await this.client.from(table).update(data).match(query).select();
         return this.assembleResponse(error, result);

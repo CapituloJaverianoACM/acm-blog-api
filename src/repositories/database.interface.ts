@@ -23,11 +23,6 @@ export interface IDatabase {
         },
         limit?: number,
     ): Promise<DBResponse>;
-    update<T>(
-        table: string,
-        query: Partial<T>,
-        data: T,
-    ): Promise<DBResponse>;
     updateBy<T, DTO>(
         table: string,
         query: Partial<T>,
