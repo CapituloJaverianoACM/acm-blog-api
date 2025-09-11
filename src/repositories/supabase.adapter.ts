@@ -25,7 +25,7 @@ export class SupabaseAdaapter implements IDatabase {
     }
 
     async getAll(table: string, order?: { column: string; asc?: boolean; }, 
-    limit?: number): Promise<{ error: string | null; data: any; }>{
+    limit?: number): Promise<DBResponse>{
 
         let req = this.client.from(table).select('*');
         
