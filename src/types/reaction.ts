@@ -1,13 +1,15 @@
+export type ReactionType = 'LIKE' | 'DISLIKE' | 'HEART' | 'ANGRY';
+
 // Reaction entity
 export interface ReactionInterface {
     blog_id: number;
     user_id: number;
-    type: 'LIKE' | 'DISLIKE' | 'HEART' | 'ANGRY';
+    type: ReactionType;
 }
 
-// Create and update Reaction Request Interface
-export interface CreateReactionInterface {
+// Create and Update operations share the same structure(Upsert)
+export interface CreateUpdateReactionInterface {
     blog_id: number;
     user_id: number;
-    type: 'LIKE' | 'DISLIKE' | 'HEART' | 'ANGRY' ;
+    type: ReactionType;
 } 
