@@ -1,4 +1,4 @@
-import {Elysia} from "elysia";
+ import {Elysia} from "elysia";
 import {CreateUpdateReactionSchema, ReactionParamsSchema, BlogParamsSchema, UserParamsSchema} from "../schemas/reactions.schemas";
 import {ResponseHelpers} from "../utils/response.helpers";
 import {SupabaseAdaapter} from "../repositories/supabase.adapter";
@@ -68,6 +68,28 @@ export const reactionRoutes = new Elysia({prefix: '/reactions'})
     }, {
         params: BlogParamsSchema
     })
+
+    // GET /reactions/user/:user_id - Get all reactions by a specific user
+    .get('/user/:user_id', async ({params: {user_id}}) => {
+        try {
+            const userId = parseInt(user_id);
+            const response = await db.getBy(TABLE, {user_id: userId}, {column: 'blog_id', asc: true});
+            if (response.error) {
+                return ResponseHelpers.serverError(response.error);
+            }
+            const reactions = response.data || []; 
+            return ResponseHelpers.ok(
+                reactions,
+                "Reactions by user retrieved successfully",
+                reactions.length
+            );
+        } catch (error) {
+            return ResponseHelpers.serverError("Failed to retrieve reactions by user");
+        }
+    }, {
+        params: UserParamsSchema
+    })
+    
     // POST /reactions - Create or update a reaction (upsert)
     .post('/', async ({ body }) => {
         try {
@@ -85,7 +107,7 @@ export const reactionRoutes = new Elysia({prefix: '/reactions'})
 
             if (existingReaction) {
                 // Update the existing reaction
-                response = await db.updateBy(TABLE, {type}, {blog_id, user_id});
+                response = await db.updateBy(TABLE, {blog_id, user_id}, {type});
                 message = "Reaction updated successfully";
             } else {
                 // Create a new reaction
@@ -110,7 +132,7 @@ export const reactionRoutes = new Elysia({prefix: '/reactions'})
             const blogId = parseInt(blog_id);
             const userId = parseInt(user_id);
             const {type} = body;
-            const response = await db.updateBy(TABLE, {type:body.type}, {blog_id: blogId, user_id: userId});
+            const response = await db.updateBy(TABLE, {blog_id: blogId, user_id: userId}, {type}); 
             if (response.error) {
                 return ResponseHelpers.serverError(response.error);
             }
