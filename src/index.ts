@@ -16,6 +16,6 @@ console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
 console.log('Comments API: http://localhost:5454/comments - Done by JuanBap');
-
+console.log('Reactions API: http://localhost:5454/reactions - Done by Ivan140826'); 
 //Shutdown of the server in a appropiate way
 ShutdownHandler.setupSignalHandlers(app);
