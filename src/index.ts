@@ -3,11 +3,13 @@ import { swagger } from "@elysiajs/swagger";
 import { swaggerConfig, welcomeMessage } from "./utils/app.config";
 import { commentRoutes } from "./routes/comment.routes";
 import { ShutdownHandler } from "./utils/shutdown-handler";
+import { blogImageRoutes } from "./routes/blogImage.routes";
 
 const app = new Elysia()
   .use(swagger(swaggerConfig))
   .get("/", () => welcomeMessage)
   .use(commentRoutes)
+  .use(blogImageRoutes)
   .listen(5454);
 
 console.log(
