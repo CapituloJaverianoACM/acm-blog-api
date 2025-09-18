@@ -1,8 +1,9 @@
- import {Elysia} from "elysia";
+import {Elysia} from "elysia";
 import {CreateUpdateReactionSchema, ReactionParamsSchema, BlogParamsSchema, UserParamsSchema} from "../schemas/reactions.schemas";
 import {ResponseHelpers} from "../utils/response.helpers";
 import {SupabaseAdaapter} from "../repositories/supabase.adapter";
 import {IDatabase} from "../repositories/database.interface";  
+import { ReactionType } from "../types/reaction";
 const TABLE = 'reaction';
 const db: IDatabase = SupabaseAdaapter.getInstance();
 
@@ -95,6 +96,11 @@ export const reactionRoutes = new Elysia({prefix: '/reactions'})
         try {
             const {blog_id, user_id, type} = body;
 
+            // check for valid reaction type
+            if (!Object.values(ReactionType).includes(type)) {
+                return ResponseHelpers.badRequest("Invalid reaction type");
+            }
+
             // Check if the reaction already exists
             const existingResponse = await db.getBy(TABLE, {blog_id, user_id});
             if (existingResponse.error) {
@@ -126,30 +132,7 @@ export const reactionRoutes = new Elysia({prefix: '/reactions'})
     }, {
         body: CreateUpdateReactionSchema
     })
-    //PUT /reactions/:blog_id/:user_id - Update a reaction
-.put('/:blog_id/:user_id', async ({params: {blog_id, user_id}, body}) => {
-        try {
-            const blogId = parseInt(blog_id);
-            const userId = parseInt(user_id);
-            const {type} = body;
-            const response = await db.updateBy(TABLE, {blog_id: blogId, user_id: userId}, {type}); 
-            if (response.error) {
-                return ResponseHelpers.serverError(response.error);
-            }
-            const Updatedreaction = response.data?.[0] || null;
-
-            if(!Updatedreaction) {
-                return ResponseHelpers.notFound('Reaction not found');
-            }
-            return ResponseHelpers.ok(Updatedreaction, "Reaction updated successfully");
-        } catch (error) {
-            return ResponseHelpers.serverError("Failed to update reaction");
-        }
-    }, {
-        params: ReactionParamsSchema,
-        body: CreateUpdateReactionSchema
-    })
-
+  
     // DELETE /reactions/:blog_id/:user_id - Delete a reaction 
     .delete('/:blog_id/:user_id', async ({params: {blog_id, user_id}}) => {
         try {

@@ -1,15 +1,14 @@
-export type ReactionType = 'LIKE' | 'DISLIKE' | 'HEART' | 'ANGRY';
+//Enum for reaction types  
+export enum ReactionType {
+    LIKE = 'LIKE',
+    DISLIKE = 'DISLIKE',
+    HEART = 'HEART',
+    ANGRY = 'ANGRY',
+}
 
-// Reaction entity
+// Reaction entity- interface definition for Upsert and general use.
 export interface ReactionInterface {
     blog_id: number;
     user_id: number;
     type: ReactionType;
 }
-
-// Create and Update operations share the same structure(Upsert)
-export interface CreateUpdateReactionInterface {
-    blog_id: number;
-    user_id: number;
-    type: ReactionType;
-} 

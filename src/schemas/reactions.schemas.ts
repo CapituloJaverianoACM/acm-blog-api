@@ -1,11 +1,11 @@
 import { t } from "elysia";
-//Enum schema for allowed reaction types
-export const ReactionTypeSchema = t.Union([
-    t.Literal('LIKE'),
-    t.Literal('DISLIKE'),
-    t.Literal('HEART'),
-    t.Literal('ANGRY'),
-]);
+import { ReactionType } from "../types/reaction";
+
+// Schema for ReactionType enum
+export const ReactionTypeSchema = t.Enum(ReactionType, {
+    description: "Type of reaction",
+    examples: Object.values(ReactionType)
+});
 
 // Schema for creating/Updating a new reaction, using upsert method
 export const CreateUpdateReactionSchema = t.Object({
